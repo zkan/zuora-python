@@ -1,4 +1,7 @@
-from zuora.wrappers import Account
+from zuora.wrappers import (
+    Account,
+    Subscription
+)
 
 
 class Zuora(object):
@@ -20,3 +23,4 @@ class Zuora(object):
         zuora_settings['headers'] = self.headers
 
         self.account = Account(zuora_settings)
+        self.subscription = Subscription(zuora_settings)

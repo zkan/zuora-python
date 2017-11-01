@@ -184,3 +184,48 @@ class AccountTest(unittest.TestCase):
             json=account_data,
             verify=False
         )
+
+class SubscriptionTest(unittest.TestCase):
+    def setUp(self):
+        self.zuora_account_key = 'A00003766'
+        self.api_base = 'https://rest.apisandbox.zuora.com'
+        zuora_settings = {
+            'api_base': self.api_base,
+            'username': 'pronto',
+            'password': 'pronto',
+        }
+        self.zuora = Zuora(zuora_settings)
+
+    @patch('zuora.wrappers.subscription.requests.post')
+    def test_create_subscription(self, mock_post):
+        mock_post.return_value.json.return_value = expected = {
+            'subscriptionNumber': 'A-S00001084',
+            'success': True,
+            'subscriptionId': '2c92c8f83dcbd8b1013dcce0ead40071'
+        }
+
+        subscription_data = {
+            'accountKey': 'A00004268',
+            'termType': 'EVERGREEN',
+            'contractEffectiveDate': '2014-01-01',
+            'serviceActivationDate': '2014-01-01',
+            'invoiceCollect': 'true',
+            'subscribeToRatePlans': [
+                {
+                    'productRatePlanId': '4028e6962eb8004a012ed83fa9fd241e'
+                }
+            ]
+        }
+        result = self.zuora.subscription.create(subscription_data)
+
+        self.assertDictEqual(result, expected)
+        mock_post.assert_called_once_with(
+            f'{self.api_base}/v1/subscriptions',
+            headers={
+                'apiAccessKeyId': 'pronto',
+                'apiSecretAccessKey': 'pronto',
+                'Content-Type': 'application/json'
+            },
+            json=subscription_data,
+            verify=False
+        )
