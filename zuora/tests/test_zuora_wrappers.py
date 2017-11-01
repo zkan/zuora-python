@@ -185,6 +185,7 @@ class AccountTest(unittest.TestCase):
             verify=False
         )
 
+
 class SubscriptionTest(unittest.TestCase):
     def setUp(self):
         self.zuora_account_key = 'A00003766'
