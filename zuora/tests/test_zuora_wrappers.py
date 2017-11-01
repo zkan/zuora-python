@@ -6,7 +6,7 @@ from zuora.client import Zuora
 
 class AccountTest(unittest.TestCase):
     def test_zuora_settings(self):
-        zuora_settings = expected = {
+        zuora_settings = {
             'username': 'pronto',
             'password': 'pronto',
         }
