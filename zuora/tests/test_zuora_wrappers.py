@@ -118,3 +118,73 @@ class AccountTest(unittest.TestCase):
             },
             verify=False
         )
+
+    @patch('zuora.wrappers.account.requests.post')
+    def test_create_account(self, mock_post):
+        mock_post.return_value.json.return_value = expected = {
+            'success': True,
+            'accountId': '402892c74c9193cd014c96bbe7c101f9',
+            'accountNumber': 'A00000004',
+            'paymentMethodId': '402892c74c9193cd014c96bbe7d901fd'
+        }
+
+        api_base = 'https://rest.apisandbox.zuora.com'
+        zuora_settings = {
+            'api_base': api_base,
+            'username': 'pronto',
+            'password': 'pronto',
+        }
+        zuora = Zuora(zuora_settings)
+
+        account_data = {
+            'additionalEmailAddresses': [
+                'test1@test.com',
+                'test2@test.com'
+            ],
+            'autoPay': False,
+            'billCycleDay': 0,
+            'billToContact': {
+                'address1': '1051 E Hillsdale Blvd',
+                'city': 'Foster City',
+                'country': 'United States',
+                'firstName': 'John',
+                'lastName': 'Smith',
+                'state': 'CA',
+                'workEmail': 'john.smith@test.com',
+                'zipCode': '94404'
+            },
+            'currency': 'USD',
+            'creditCard': {
+                'cardType': 'Visa',
+                'cardNumber': '4111111111111111',
+                'expirationMonth': '2',
+                'expirationYear': '2014',
+                'cardHolderInfo': {
+                    'cardHolderName': 'Kan Ouivirach',
+                    'addressLine1': 'Somewhere',
+                    'city': 'Bangkok',
+                    'state': 'Somewhere in Bangkok',
+                    'zipCode': '12000',
+                    'country': 'Thailand',
+                    'email': 'kan@prontomarketing.com'
+                }
+            },
+            'invoiceDeliveryPrefsEmail': True,
+            'invoiceDeliveryPrefsPrint': False,
+            'name': 'Zuora Test Account',
+            'notes': 'This account is for demo purposes.',
+            'paymentTerm': 'Due Upon Receipt'
+        }
+        result = zuora.account.create(account_data)
+
+        self.assertDictEqual(result, expected)
+        mock_post.assert_called_once_with(
+            f'{api_base}/v1/accounts',
+            headers={
+                'apiAccessKeyId': 'pronto',
+                'apiSecretAccessKey': 'pronto',
+                'Content-Type': 'application/json'
+            },
+            json=account_data,
+            verify=False
+        )

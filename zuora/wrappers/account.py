@@ -14,3 +14,14 @@ class Account(object):
             verify=self.zuora_settings.get('verify_ssl_certs')
         )
         return response.json()
+
+    def create(self, data):
+        url = f'{self.zuora_settings.get("api_base")}' \
+            f'/v1/accounts'
+        response = requests.post(
+            url,
+            headers=self.zuora_settings.get('headers'),
+            json=data,
+            verify=self.zuora_settings.get('verify_ssl_certs')
+        )
+        return response.json()
